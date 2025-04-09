@@ -4,7 +4,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder
 import altair as alt
 
 st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
-st.title("📊 Προβολή Excel: OCF ΕΛΛΑΚΤΩΡ 2024")
+st.title("📊  OCF ΕΛΛΑΚΤΩΡ 2024")
 
 # Διαβάζουμε όλα τα φύλλα
 excel_file = "OCF_ELLAKTOR_2024_DRAFT_V3.xlsx"
