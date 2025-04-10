@@ -15,14 +15,16 @@ col1, col2 = st.columns([1, 8])
 with col1:
     try:
         logo = Image.open("logo.png")
-        st.image(logo, width=220, caption="", use_container_width=False)
+        st.image(logo, use_container_width=True)
+    except:
+        st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
     except:
         st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
 with col2:
     st.markdown("""
+        <div style='display: flex; align-items: center; height: 100%;'>
         ### [Envirometrics](https://envirometrics.evolution-isa.gr/)
-        *Climate | Environment | Energy*
-    """)
+        *Climate | Environment | Energy*</div>""")
 
 st.title("📊 OCF ΕΛΛΑΚΤΩΡ 2024")
 
