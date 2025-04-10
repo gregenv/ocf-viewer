@@ -6,19 +6,22 @@ import os
 import base64
 import tempfile
 from datetime import datetime
-from PIL import Image  # Για εμφάνιση λογότυπου
+from PIL import Image
 
 st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
 
-# 🔗 Λογότυπο + Σύνδεσμος εταιρείας
+# 🔗 Λογότυπο + Σύνδεσμος εταιρείας με εντυπωσιακή εμφάνιση
 col1, col2 = st.columns([1, 8])
 with col1:
-    logo = Image.open("logo.png")  # Βεβαιώσου ότι το logo.png είναι στο ίδιο directory
-    st.image(logo, width=220)
+    st.markdown("""
+        <a href="https://envirometrics.evolution-isa.gr/" target="_blank">
+            <img src="logo.png" width="220" style="border-radius: 10px; box-shadow: 2px 2px 12px rgba(0,0,0,0.3);">
+        </a>
+    """, unsafe_allow_html=True)
 with col2:
     st.markdown("""
         ### [Envirometrics](https://envirometrics.evolution-isa.gr/)
-        *Climate|Enviroment|Energy*
+        *Climate | Environment | Energy*
     """)
 
 st.title("📊 OCF ΕΛΛΑΚΤΩΡ 2024")
@@ -100,27 +103,7 @@ if numeric_columns and text_columns:
     st.altair_chart(chart, use_container_width=True)
 
     with st.expander("📥 Εξαγωγή Διαγράμματος σε PDF"):
-        try:
-            svg = chart.save(None, format='svg')
-
-            tmp_svg_path = os.path.join(tempfile.gettempdir(), "chart.svg")
-            with open(tmp_svg_path, "w", encoding="utf-8") as f:
-                f.write(svg)
-
-            import svglib.svglib
-            import reportlab.graphics
-            from svglib.svglib import svg2rlg
-            from reportlab.graphics import renderPDF
-
-            drawing = svg2rlg(tmp_svg_path)
-            tmp_pdf_path = os.path.join(tempfile.gettempdir(), "chart.pdf")
-            renderPDF.drawToFile(drawing, tmp_pdf_path)
-
-            with open(tmp_pdf_path, "rb") as f:
-                b64 = base64.b64encode(f.read()).decode()
-                href = f'<a href="data:application/octet-stream;base64,{b64}" download="chart.pdf">📄 Κατέβασε PDF</a>'
-                st.markdown(href, unsafe_allow_html=True)
-        except:
-            st.warning("Δεν υποστηρίζεται πλήρως η μετατροπή SVG σε PDF σε αυτό το περιβάλλον.")
+        st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
     st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
+
