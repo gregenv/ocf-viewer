@@ -25,7 +25,13 @@ with col2:
         <div style='display: flex; align-items: center; height: 100%; font-size: 1.5em;'>
             <a href="https://envirometrics.evolution-isa.gr/" target="_blank" style="text-decoration: none; color: #000;">
                 <strong>Envirometrics</strong><br>
-                <span style="font-size: 0.8em; font-style: italic; color: #444;">Climate | Environment | Energy</span>
+                <span style="font-size: 0.8em; font-style: italic; color: white; animation: fadeIn 2s ease-in-out infinite alternate;">Data-driven Sustainability Excellence</span>
+<style>
+@keyframes fadeIn {
+  from { opacity: 0.4; }
+  to { opacity: 1; }
+}
+</style>
             </a>
         </div>
     """, unsafe_allow_html=True)
@@ -112,5 +118,6 @@ if numeric_columns and text_columns:
         st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
     st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
+
 
 
