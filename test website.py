@@ -11,11 +11,11 @@ from PIL import Image
 st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
 
 # 🔗 Λογότυπο + Σύνδεσμος εταιρείας με εντυπωσιακή εμφάνιση
-col1, col2 = st.columns([1, 8])
+col1, col2 = st.columns([2, 6])
 with col1:
     try:
         logo = Image.open("logo.png")
-        st.image(logo, use_container_width=True)
+        st.image(logo, width=260)
     except Exception:
         st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
     
@@ -118,6 +118,7 @@ if numeric_columns and text_columns:
         st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
     st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
+
 
 
 
