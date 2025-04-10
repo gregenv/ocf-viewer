@@ -14,11 +14,11 @@ st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
 col1, col2 = st.columns([1, 8])
 with col1:
     logo = Image.open("logo.png")  # Βεβαιώσου ότι το logo.png είναι στο ίδιο directory
-    st.image(logo, width=80)
+    st.image(logo, width=220)
 with col2:
     st.markdown("""
-        ### [EnviroMetrics](https://envirometrics.evolution-isa.gr/)
-        *Smart environmental data solutions*
+        ### [Envirometrics](https://envirometrics.evolution-isa.gr/)
+        *Climate|Enviroment|Energy*
     """)
 
 st.title("📊 OCF ΕΛΛΑΚΤΩΡ 2024")
