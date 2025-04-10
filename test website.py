@@ -16,9 +16,9 @@ with col1:
     try:
         logo = Image.open("logo.png")
         st.image(logo, use_container_width=True)
-    except:
+    except Exception:
         st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
-    except:
+    
         st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
 with col2:
     st.markdown("""
