@@ -1,113 +1,81 @@
 import streamlit as st
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder
-import altair as alt
-import os
+import matplotlib.pyplot as plt
+from PIL import Image
 import base64
-import tempfile
-from datetime import datetime
+import io
 
-st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
-st.title("📊 Προβολή Excel: OCF ΕΛΛΑΚΤΩΡ 2024")
+st.set_page_config(page_title="OCF Viewer", layout="wide")
 
-# Διαβάζουμε όλα τα φύλλα
-excel_file = "OCF_ELLAKTOR_2024_DRAFT_V3.xlsx"
-sheets = pd.read_excel(excel_file, sheet_name=None)
+# === Logo and Title ===
+col1, col2 = st.columns([1, 6])
+with col1:
+    st.markdown(f'<a href="https://envirometrics.evolution-isa.gr/" target="_blank">'
+                f'<img src="data:image/png;base64,{base64.b64encode(open("logo.png", "rb").read()).decode()}" width="110">'
+                f'</a>', unsafe_allow_html=True)
+with col2:
+    st.title("OCF Viewer – ΕΛΛΑΚΤΩΡ 2024")
 
-# Επιλογή φύλλου
-sheet_names = list(sheets.keys())
-selected_sheet = st.selectbox("Επέλεξε φύλλο:", sheet_names)
+# === File Upload ===
+uploaded_file = st.file_uploader("Επιλέξτε ένα αρχείο Excel", type=["xlsx"])
 
-df = sheets[selected_sheet]
-df.columns = df.columns.map(str)
+if uploaded_file:
+    sheet_names = pd.ExcelFile(uploaded_file).sheet_names
+    sheet = st.selectbox("Επιλέξτε φύλλο εργασίας", sheet_names)
+    df = pd.read_excel(uploaded_file, sheet_name=sheet)
 
-# Μορφοποίηση αριθμών
-pd.options.display.float_format = '{:,.2f}'.format
+    st.subheader("Πίνακας Δεδομένων")
+    df.columns = df.columns.astype(str)
 
-# Επιλογή εμφάνισης Top 10 ή όλων
-show_top_10 = st.checkbox("Προβολή μόνο Top 10 (βάσει τιμής)", value=False)
+    gb = GridOptionsBuilder.from_dataframe(df)
+    gb.configure_default_column(filter="agTextColumnFilter", resizable=True, sortable=True)
+    gb.configure_pagination(paginationAutoPageSize=False, paginationPageSize=20)
+    gb.configure_side_bar()
+    gb.configure_selection("multiple", use_checkbox=True)
+    grid_options = gb.build()
 
-# Επιλογή στήλης για φιλτράρισμα Top 10
-numeric_columns = df.select_dtypes(include=['number']).columns.tolist()
-text_columns = df.select_dtypes(include=['object']).columns.tolist()
-
-if show_top_10 and numeric_columns:
-    top_col = st.selectbox("Επέλεξε αριθμητική στήλη για Top 10:", numeric_columns)
-    df = df.nlargest(10, top_col)
-
-# AgGrid με auto column sizing και scrollable ύψος
-st.subheader("📋 Πίνακας δεδομένων (με φίλτρα και scroll)")
-
-gb = GridOptionsBuilder.from_dataframe(df)
-gb.configure_default_column(editable=False, filter=True, sortable=True, resizable=True, wrapHeaderText=True, autoHeaderHeight=True)
-gb.configure_grid_options(domLayout='normal', suppressHorizontalScroll=True)
-grid_options = gb.build()
-
-grid_response = AgGrid(
-    df,
-    gridOptions=grid_options,
-    height=400,
-    width='100%',
-    fit_columns_on_grid_load=True,
-    allow_unsafe_jscode=False,
-    enable_enterprise_modules=False,
-    editable=False,
-    enable_quicksearch=True,
-    update_mode='MODEL_CHANGED',
-    reload_data=True
-)
-
-filtered_df = grid_response['data']
-
-# Υπολογισμός Total
-if numeric_columns:
-    st.markdown("### 📌 Σύνολο επιλεγμένων (φιλτραρισμένων) δεδομένων:")
-    for col in numeric_columns:
-        if col in filtered_df.columns:
-            total = filtered_df[col].sum()
-            st.markdown(f"**{col}:** {total:,.2f}")
-
-# Διάγραμμα πίτας
-st.subheader("🥧 Διάγραμμα Πίτας από τα φιλτραρισμένα δεδομένα")
-
-if numeric_columns and text_columns:
-    value_col = st.selectbox("Επέλεξε αριθμητική στήλη (τιμή):", numeric_columns)
-    category_col = st.selectbox("Επέλεξε κατηγορία (ετικέτα):", text_columns)
-
-    pie_data = filtered_df[[category_col, value_col]].dropna()
-    chart = alt.Chart(pie_data).mark_arc().encode(
-        theta=alt.Theta(field=value_col, type="quantitative"),
-        color=alt.Color(field=category_col, type="nominal"),
-        tooltip=[category_col, alt.Tooltip(value_col, format=',.2f')]
-    ).properties(
-        width=600,
-        height=500,
-        title=f"{value_col} κατά {category_col}"
+    grid_response = AgGrid(
+        df,
+        gridOptions=grid_options,
+        update_mode=GridUpdateMode.SELECTION_CHANGED,
+        height=400,
+        width='100%',
+        fit_columns_on_grid_load=True,
+        enable_enterprise_modules=True
     )
-    st.altair_chart(chart, use_container_width=True)
 
-    with st.expander("📥 Εξαγωγή Διαγράμματος σε PDF"):
+    selected = grid_response["selected_rows"]
+    filtered_df = pd.DataFrame(selected) if selected else df
+
+    # === Total Row ===
+    if not filtered_df.empty:
+        total_row = filtered_df.select_dtypes(include=['number']).sum(numeric_only=True).to_frame().T
+        total_row.index = ["Σύνολο"]
+        styled_total = total_row.style.format("{:.2f}", thousands=",")
+        st.subheader("Σύνολα επιλεγμένων:")
+        st.dataframe(styled_total)
+
+    # === Pie Chart ===
+    st.subheader("Διάγραμμα Πίτας")
+    numeric_cols = filtered_df.select_dtypes(include=['number']).columns.tolist()
+    if numeric_cols:
+        col = st.selectbox("Επιλέξτε αριθμητική στήλη", numeric_cols)
+        pie_data = filtered_df[col].groupby(filtered_df.index).sum()
+        fig, ax = plt.subplots()
+        ax.pie(pie_data, labels=pie_data.index, autopct="%1.1f%%", startangle=90)
+        ax.axis('equal')
+        st.pyplot(fig)
+
+    # === Export to PDF ===
+    st.subheader("Εξαγωγή σε PDF")
+    if st.button("Export PDF"):
         try:
-            svg = chart.save(None, format='svg')
-
-            tmp_svg_path = os.path.join(tempfile.gettempdir(), "chart.svg")
-            with open(tmp_svg_path, "w", encoding="utf-8") as f:
-                f.write(svg)
-
-            import svglib.svglib
-            import reportlab.graphics
-            from svglib.svglib import svg2rlg
-            from reportlab.graphics import renderPDF
-
-            drawing = svg2rlg(tmp_svg_path)
-            tmp_pdf_path = os.path.join(tempfile.gettempdir(), "chart.pdf")
-            renderPDF.drawToFile(drawing, tmp_pdf_path)
-
-            with open(tmp_pdf_path, "rb") as f:
-                b64 = base64.b64encode(f.read()).decode()
-                href = f'<a href="data:application/octet-stream;base64,{b64}" download="chart.pdf">📄 Κατέβασε PDF</a>'
-                st.markdown(href, unsafe_allow_html=True)
-        except:
-            st.warning("Δεν υποστηρίζεται πλήρως η μετατροπή SVG σε PDF σε αυτό το περιβάλλον.")
-else:
-    st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
+            import pdfkit
+            html = filtered_df.to_html(index=False)
+            pdf_bytes = pdfkit.from_string(html, False)
+            b64 = base64.b64encode(pdf_bytes).decode()
+            href = f'<a href="data:application/pdf;base64,{b64}" download="filtered_data.pdf">Λήψη PDF</a>'
+            st.markdown(href, unsafe_allow_html=True)
+        except Exception as e:
+            st.error("Αποτυχία δημιουργίας PDF. Σφάλμα: " + str(e))
