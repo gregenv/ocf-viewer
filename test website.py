@@ -15,7 +15,7 @@ col1, col2 = st.columns([1, 8])
 with col1:
     try:
         logo = Image.open("logo.png")
-        st.image(logo, width=220, caption="", use_column_width=False)
+        st.image(logo, width=220, caption="", use_container_width=False)
     except:
         st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
 with col2:
@@ -106,4 +106,5 @@ if numeric_columns and text_columns:
         st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
     st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
+
 
