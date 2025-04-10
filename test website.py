@@ -11,9 +11,11 @@ st.set_page_config(page_title="OCF Viewer", layout="wide")
 # === Logo and Title ===
 col1, col2 = st.columns([1, 6])
 with col1:
-    st.markdown(f'<a href="https://envirometrics.evolution-isa.gr/" target="_blank">'
-                f'<img src="data:image/png;base64,{base64.b64encode(open("logo.png", "rb").read()).decode()}" width="110">'
-                f'</a>', unsafe_allow_html=True)
+    st.markdown("""
+        <a href="https://envirometrics.evolution-isa.gr/" target="_blank">
+            <img src="logo.png" width="110">
+        </a>
+    """, unsafe_allow_html=True)
 with col2:
     st.title("OCF Viewer – ΕΛΛΑΚΤΩΡ 2024")
 
@@ -79,3 +81,4 @@ if uploaded_file:
             st.markdown(href, unsafe_allow_html=True)
         except Exception as e:
             st.error("Αποτυχία δημιουργίας PDF. Σφάλμα: " + str(e))
+
