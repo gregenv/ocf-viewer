@@ -22,9 +22,13 @@ with col1:
         st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
 with col2:
     st.markdown("""
-        <div style='display: flex; align-items: center; height: 100%;'>
-        ### [Envirometrics](https://envirometrics.evolution-isa.gr/)
-        *Climate | Environment | Energy*</div>""")
+        <div style='display: flex; align-items: center; height: 100%; font-size: 1.5em;'>
+            <a href="https://envirometrics.evolution-isa.gr/" target="_blank" style="text-decoration: none; color: #000;">
+                <strong>Envirometrics</strong><br>
+                <span style="font-size: 0.8em; font-style: italic; color: #444;">Climate | Environment | Energy</span>
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
 
 st.title("📊 OCF ΕΛΛΑΚΤΩΡ 2024")
 
