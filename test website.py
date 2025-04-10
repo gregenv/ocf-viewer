@@ -13,11 +13,11 @@ st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
 # 🔗 Λογότυπο + Σύνδεσμος εταιρείας με εντυπωσιακή εμφάνιση
 col1, col2 = st.columns([1, 8])
 with col1:
-    st.markdown("""
-        <a href="https://envirometrics.evolution-isa.gr/" target="_blank">
-            <img src="logo.png" width="220" style="border-radius: 10px; box-shadow: 2px 2px 12px rgba(0,0,0,0.3);">
-        </a>
-    """, unsafe_allow_html=True)
+    try:
+        logo = Image.open("logo.png")
+        st.image(logo, width=220, caption="", use_column_width=False)
+    except:
+        st.warning("Το λογότυπο δεν φορτώθηκε σωστά.")
 with col2:
     st.markdown("""
         ### [Envirometrics](https://envirometrics.evolution-isa.gr/)
