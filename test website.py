@@ -8,7 +8,7 @@ import tempfile
 from datetime import datetime
 from PIL import Image
 
-st.set_page_config(page_title="OCF ΕΛΛΑΚΤΩΡ 2024", layout="wide")
+st.set_page_config(page_title="OCF SAMPLE 2024", layout="wide")
 
 # 🔗 Λογότυπο + Σύνδεσμος εταιρείας με εντυπωσιακή εμφάνιση
 col1, col2 = st.columns([2, 6])
@@ -36,10 +36,10 @@ with col2:
         </div>
     """, unsafe_allow_html=True)
 
-st.title("📊 OCF ΕΛΛΑΚΤΩΡ 2024")
+st.title("📊 OCF SAMPLE 2024")
 
 # Διαβάζουμε όλα τα φύλλα
-excel_file = "OCF_ELLAKTOR_2024_DRAFT_V3.xlsx"
+excel_file = "OCF_SAMPLE_2024.xlsx"
 sheets = pd.read_excel(excel_file, sheet_name=None)
 
 # Επιλογή φύλλου
