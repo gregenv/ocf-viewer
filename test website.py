@@ -67,9 +67,11 @@ if show_top_10 and numeric_columns:
 st.subheader("📋 Πίνακας δεδομένων (με φίλτρα και scroll)")
 
 gb = GridOptionsBuilder.from_dataframe(df)
-gb.configure_default_column(editable=False, filter=True, sortable=True, resizable=True, wrapHeaderText=True, autoHeaderHeight=True)
-gb.configure_grid_options(domLayout='normal', suppressHorizontalScroll=True)
+for col in numeric_columns:
+    gb.configure_column(col, type=["numericColumn", "numberColumnFilter", "customNumericFormat"], precision=2, valueFormatter='value.toLocaleString("de-DE")')
+
 grid_options = gb.build()
+
 
 grid_response = AgGrid(
     df,
@@ -124,4 +126,5 @@ if numeric_columns and text_columns:
         st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
     st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
+
 
