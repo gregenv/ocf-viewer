@@ -8,7 +8,7 @@ import tempfile
 from datetime import datetime
 from PIL import Image
 
-st.set_page_config(page_title="OCF SAMPLE 2024", layout="wide")
+st.set_page_config(page_title="OCF Sample 2024", layout="wide")
 
 # 🔗 Λογότυπο + Σύνδεσμος εταιρείας με εντυπωσιακή εμφάνιση
 col1, col2 = st.columns([2, 6])
@@ -36,7 +36,7 @@ with col2:
         </div>
     """, unsafe_allow_html=True)
 
-st.title("📊 OCF SAMPLE 2024")
+st.title("📊 OCF Sample 2024")
 
 # Διαβάζουμε όλα τα φύλλα
 excel_file = "OCF_SAMPLE_2024.xlsx"
@@ -44,7 +44,7 @@ sheets = pd.read_excel(excel_file, sheet_name=None)
 
 # Επιλογή φύλλου
 sheet_names = list(sheets.keys())
-selected_sheet = st.selectbox("Επέλεξε φύλλο:", sheet_names)
+selected_sheet = st.selectbox("Select sheet:", sheet_names)
 
 df = sheets[selected_sheet]
 df.columns = df.columns.map(str)
@@ -53,18 +53,18 @@ df.columns = df.columns.map(str)
 pd.options.display.float_format = '{:,.2f}'.format
 
 # Επιλογή εμφάνισης Top 10 ή όλων
-show_top_10 = st.checkbox("Προβολή μόνο Top 10 (βάσει τιμής)", value=False)
+show_top_10 = st.checkbox("Show only Top 10 (by value)", value=False)
 
 # Επιλογή στήλης για φιλτράρισμα Top 10
 numeric_columns = df.select_dtypes(include=['number']).columns.tolist()
 text_columns = df.select_dtypes(include=['object']).columns.tolist()
 
 if show_top_10 and numeric_columns:
-    top_col = st.selectbox("Επέλεξε αριθμητική στήλη για Top 10:", numeric_columns)
+    top_col = st.selectbox("Select numeric column for Top 10:", numeric_columns)
     df = df.nlargest(10, top_col)
 
 # AgGrid με auto column sizing και scrollable ύψος
-st.subheader("📋 Πίνακας δεδομένων (με φίλτρα και scroll)")
+st.subheader("📋 Data table (with filters and scroll)")
 
 gb = GridOptionsBuilder.from_dataframe(df)
 for col in numeric_columns:
@@ -96,7 +96,7 @@ def format_eu_number(value):
 
 # Υπολογισμός Total
 if numeric_columns:
-    st.markdown("### 📌 Σύνολο επιλεγμένων (φιλτραρισμένων) δεδομένων:")
+    st.markdown("### 📌 Total of selected (filtered) data:")
     for col in numeric_columns:
         if col in filtered_df.columns:
             total = filtered_df[col].sum()
@@ -104,11 +104,11 @@ if numeric_columns:
             st.markdown(f"**{col}:** {formatted_total}")
 
 # Διάγραμμα πίτας
-st.subheader("🥧 Διάγραμμα Πίτας από τα φιλτραρισμένα δεδομένα")
+st.subheader("🥧 Pie Chart from filtered data")
 
 if numeric_columns and text_columns:
-    value_col = st.selectbox("Επέλεξε αριθμητική στήλη (τιμή):", numeric_columns)
-    category_col = st.selectbox("Επέλεξε κατηγορία (ετικέτα):", text_columns)
+    value_col = st.selectbox("Select numeric column (value):", numeric_columns)
+    category_col = st.selectbox("Select category (label):", text_columns)
 
     pie_data = filtered_df[[category_col, value_col]].dropna()
     chart = alt.Chart(pie_data).mark_arc().encode(
@@ -122,9 +122,7 @@ if numeric_columns and text_columns:
     )
     st.altair_chart(chart, use_container_width=True)
 
-    with st.expander("📥 Εξαγωγή Διαγράμματος σε PDF"):
-        st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
+    with st.expander("📥 Export Chart to PDF"):
+        st.info("⚠️ ⚠️ Exporting chart to PDF is not fully supported on Streamlit Cloud. To save it, right-click on the chart and choose 'Save as image'.. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
-    st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
-
-
+    st.info("At least one numeric and one text column are required for pie chart.")
