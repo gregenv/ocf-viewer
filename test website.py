@@ -87,13 +87,19 @@ grid_response = AgGrid(
 
 filtered_df = grid_response['data']
 
+# Συνάρτηση μορφοποίησης ευρωπαϊκού τύπου
+
+def format_eu_number(value):
+    return f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
 # Υπολογισμός Total
 if numeric_columns:
     st.markdown("### 📌 Σύνολο επιλεγμένων (φιλτραρισμένων) δεδομένων:")
     for col in numeric_columns:
         if col in filtered_df.columns:
             total = filtered_df[col].sum()
-            st.markdown(f"**{col}:** {total:,.2f}")
+            formatted_total = format_eu_number(total)
+            st.markdown(f"**{col}:** {formatted_total}")
 
 # Διάγραμμα πίτας
 st.subheader("🥧 Διάγραμμα Πίτας από τα φιλτραρισμένα δεδομένα")
@@ -118,7 +124,4 @@ if numeric_columns and text_columns:
         st.info("⚠️ Η εξαγωγή διαγράμματος σε PDF δεν υποστηρίζεται πλήρως στο Streamlit Cloud. Αν θέλετε να το αποθηκεύσετε, μπορείτε να κάνετε δεξί κλικ στο διάγραμμα και να επιλέξετε 'Save as image'.")
 else:
     st.info("Χρειάζονται τουλάχιστον μία αριθμητική και μία κειμενική στήλη για γράφημα πίτας.")
-
-
-
 
